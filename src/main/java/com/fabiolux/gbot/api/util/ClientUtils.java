@@ -1,4 +1,4 @@
-package com.fabiolux.gbot;
+package com.fabiolux.gbot.api.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,13 +10,16 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class WebController {
-    public static Retrofit buildRetrofit(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+public class ClientUtils {
+    public static Gson getGson(){
+        return new GsonBuilder().setPrettyPrinting().create();
+    }
+
+    public static Retrofit buildRetrofit(String host){
         return new Retrofit.Builder()
-                .baseUrl("https://braziliex.com")
+                .baseUrl(host)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(getHttpClient())
                 .build();
@@ -24,8 +27,8 @@ public class WebController {
 
     private static OkHttpClient getHttpClient() {
         return new OkHttpClient.Builder()
-                .readTimeout(1, TimeUnit.MINUTES)
-                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
                 .build();
     }
 }
