@@ -1,9 +1,9 @@
-package com.fabiolux.gbot;
+package com.fabiolux.gbot.api.interfaces;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-public interface WebApi {
+public interface BrazilliexApi {
     @GET("api/v1/public/ticker/btc_brl")
     Call<String> buscaTeste();
 }
