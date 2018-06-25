@@ -1,5 +1,6 @@
 package com.fabiolux.gbot.controller;
 
+import com.fabiolux.gbot.api.BraziliexController;
 import com.fabiolux.gbot.api.interfaces.BrazilliexApi;
 import com.fabiolux.gbot.api.WebController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,11 +10,13 @@ import java.io.IOException;
 
 @RestController
 public class Teste {
-    BrazilliexApi api = WebController.buildRetrofit().create(BrazilliexApi.class);
 
     @RequestMapping("/teste")
     public String executar() throws IOException {
-        String ret = api.buscaTeste().execute().body();
+        String ret = "";
+        BraziliexController controller = new BraziliexController();
+        ret = controller.getExchange().getName();
+        ret = controller.getBtcJson();
         return ret;
     }
 }

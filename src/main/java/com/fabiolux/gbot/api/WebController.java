@@ -11,10 +11,10 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import java.util.concurrent.TimeUnit;
 
 public class WebController {
-    public static Retrofit buildRetrofit(){
+    public static Retrofit buildRetrofit(String baseUrl){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return new Retrofit.Builder()
-                .baseUrl("https://braziliex.com")
+                .baseUrl(baseUrl)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
