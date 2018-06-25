@@ -1,9 +1,19 @@
 package com.fabiolux.gbot.api.interfaces;
 
-import com.fabiolux.gbot.api.enums.TRADING_PLATFORM;
+public abstract class AbstractClientAPI<T extends Exchange> {
+    private final Exchange exchange;
 
-public abstract class AbstractClientAPI<Exchange> {
-    public abstract String getHost();
-    public abstract TRADING_PLATFORM getTradingPlatform();
-    public abstract Exchange teste();
+    public AbstractClientAPI(T exchange){
+        this.exchange = exchange;
+    }
+
+    public AbstractClientAPI(){
+        this.exchange = instantiateExchange();
+    }
+
+    public abstract T instantiateExchange();
+
+    public Exchange getExchange() {
+        return exchange;
+    }
 }
