@@ -22,6 +22,6 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
 
     @Override
     public String getBtcJson() throws IOException {
-        return getClient().buscaTeste().execute().body();
+        return null;
     }
 }
