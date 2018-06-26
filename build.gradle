@@ -31,5 +31,10 @@ dependencies {
 	implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 	implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-devtools'
+	//implementation 'org.springframework.boot:spring-boot-devtools'
+	compile 'org.hibernate:hibernate-agroal:5.3.1.Final'
+	// https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
+	compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+	// https://mvnrepository.com/artifact/org.postgresql/postgresql
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
 }
