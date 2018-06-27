@@ -1,9 +1,5 @@
 package com.fabiolux.gbot.dao;
 
-import com.fabiolux.gbot.dao.models.Configuration;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 

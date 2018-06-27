@@ -2,8 +2,7 @@ package com.fabiolux.gbot.api.interfaces;
 
 import com.fabiolux.gbot.api.apiModels.braziliex.*;
 import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 public interface BrazilliexApi {
 
@@ -39,4 +38,9 @@ public interface BrazilliexApi {
      */
     @GET("api/v1/public/tradehistory/{market}")
     Call<TradeHistory> getTradeHistory(@Path("market") String market);
+
+
+    @FormUrlEncoded
+    @POST("api/v1/private")
+    Call<String> getBalance(@Field(value = "nonce") Long nonce, @Field(value = "command") String command, @Header(value = "Key") String key, @Header(value = "Sign") String sign);
 }
