@@ -4,6 +4,8 @@ import com.fabiolux.gbot.api.apiModels.braziliex.*;
 import retrofit2.Call;
 import retrofit2.http.*;
 
+import java.util.List;
+
 public interface BrazilliexApi {
 
     /**
@@ -37,7 +39,7 @@ public interface BrazilliexApi {
      * @return Used to get retrieve the last 15 trades.
      */
     @GET("api/v1/public/tradehistory/{market}")
-    Call<TradeHistory> getTradeHistory(@Path("market") String market);
+    Call<List<TradeHistory>> getTradeHistory(@Path("market") String market);
 
 
     @FormUrlEncoded

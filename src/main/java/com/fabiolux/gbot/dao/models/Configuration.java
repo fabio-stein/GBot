@@ -24,7 +24,7 @@ public class Configuration {
     }
 
     @Basic
-    @Column(name = "conf_api_braziliex", nullable = true, length = -1)
+    @Column(name = "conf_api_braziliex", nullable = true, length = 255)
     public String getConfApiBraziliex() {
         return confApiBraziliex;
     }
@@ -34,29 +34,13 @@ public class Configuration {
     }
 
     @Basic
-    @Column(name = "conf_api_braziliex_secret", nullable = true, length = -1)
+    @Column(name = "conf_api_braziliex_secret", nullable = true, length = 255)
     public String getConfApiBraziliexSecret() {
         return confApiBraziliexSecret;
     }
 
     public void setConfApiBraziliexSecret(String confApiBraziliexSecret) {
         this.confApiBraziliexSecret = confApiBraziliexSecret;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Configuration that = (Configuration) o;
-        return Objects.equals(confId, that.confId) &&
-                Objects.equals(confApiBraziliex, that.confApiBraziliex) &&
-                Objects.equals(confApiBraziliexSecret, that.confApiBraziliexSecret);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(confId, confApiBraziliex, confApiBraziliexSecret);
     }
 
     @Basic
@@ -67,5 +51,22 @@ public class Configuration {
 
     public void setConfBraziliexNonce(Long confBraziliexNonce) {
         this.confBraziliexNonce = confBraziliexNonce;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Configuration that = (Configuration) o;
+        return Objects.equals(confId, that.confId) &&
+                Objects.equals(confApiBraziliex, that.confApiBraziliex) &&
+                Objects.equals(confApiBraziliexSecret, that.confApiBraziliexSecret) &&
+                Objects.equals(confBraziliexNonce, that.confBraziliexNonce);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(confId, confApiBraziliex, confApiBraziliexSecret, confBraziliexNonce);
     }
 }
