@@ -61,10 +61,10 @@ public abstract class BraziliexTradeHistoryImpl {
             BraziliexTradeHistory h = history.get(i);
             boolean remove = false;
             if(filter==BTH_FILTER_TYPE.GREATER_THAN) {
-                if (h.getBthTimestamp().before(tsFilter))
+                if (!(tsFilter.before(h.getBthTimestamp())))
                     remove = true;
             } else if(filter==BTH_FILTER_TYPE.LOWER_THAN){
-                if(h.getBthTimestamp().after(tsFilter))
+                if(!(tsFilter.before(h.getBthTimestamp())))
                     remove = true;
             }
             if(remove) {
