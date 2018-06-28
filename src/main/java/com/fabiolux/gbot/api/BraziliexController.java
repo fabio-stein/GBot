@@ -25,11 +25,6 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
         return BrazilliexApi.class;
     }
 
-    @Override
-    public String getBtcJson() throws IOException {
-        return null;
-    }
-
     public void updateTradeHistory(Market market) throws IOException {
         List<TradeHistory> data = getClient().getTradeHistory(market.getCode()).execute().body();
         List<BraziliexTradeHistory> history = BraziliexTradeHistory.tradeHistoryToBraziliexTradeHistory(data, market);

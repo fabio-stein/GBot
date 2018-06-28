@@ -35,6 +35,76 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: braziliex_orderbook_change; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE braziliex_orderbook_change (
+    boc_id bigint NOT NULL,
+    boc_order_item bigint NOT NULL,
+    boc_previous_amount numeric NOT NULL,
+    boc_new_amount numeric NOT NULL,
+    boc_timestamp timestamp without time zone NOT NULL,
+    boc_type integer NOT NULL,
+    boc_trade_history_reference bigint
+);
+
+
+--
+-- Name: braziliex_orderbook_change_boc_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE braziliex_orderbook_change_boc_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: braziliex_orderbook_change_boc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE braziliex_orderbook_change_boc_id_seq OWNED BY braziliex_orderbook_change.boc_id;
+
+
+--
+-- Name: braziliex_orderbook_history; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE braziliex_orderbook_history (
+    boh_id bigint NOT NULL,
+    boh_initial_amount numeric NOT NULL,
+    boh_current_amount numeric NOT NULL,
+    boh_price numeric NOT NULL,
+    boh_created_timestamp timestamp without time zone NOT NULL,
+    boh_terminated_timestamp timestamp without time zone,
+    boh_type character varying NOT NULL,
+    boh_terminated_reason integer,
+    boh_active boolean NOT NULL
+);
+
+
+--
+-- Name: braziliex_orderbook_history_boh_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE braziliex_orderbook_history_boh_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: braziliex_orderbook_history_boh_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE braziliex_orderbook_history_boh_id_seq OWNED BY braziliex_orderbook_history.boh_id;
+
+
+--
 -- Name: braziliex_trade_history; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -82,6 +152,20 @@ CREATE TABLE configuration (
 
 
 --
+-- Name: braziliex_orderbook_change boc_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_change ALTER COLUMN boc_id SET DEFAULT nextval('braziliex_orderbook_change_boc_id_seq'::regclass);
+
+
+--
+-- Name: braziliex_orderbook_history boh_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_history ALTER COLUMN boh_id SET DEFAULT nextval('braziliex_orderbook_history_boh_id_seq'::regclass);
+
+
+--
 -- Name: braziliex_trade_history bth_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -89,10 +173,53 @@ ALTER TABLE ONLY braziliex_trade_history ALTER COLUMN bth_id SET DEFAULT nextval
 
 
 --
+-- Data for Name: braziliex_orderbook_change; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY braziliex_orderbook_change (boc_id, boc_order_item, boc_previous_amount, boc_new_amount, boc_timestamp, boc_type, boc_trade_history_reference) FROM stdin;
+\.
+
+
+--
+-- Name: braziliex_orderbook_change_boc_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('braziliex_orderbook_change_boc_id_seq', 1, false);
+
+
+--
+-- Data for Name: braziliex_orderbook_history; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY braziliex_orderbook_history (boh_id, boh_initial_amount, boh_current_amount, boh_price, boh_created_timestamp, boh_terminated_timestamp, boh_type, boh_terminated_reason, boh_active) FROM stdin;
+\.
+
+
+--
+-- Name: braziliex_orderbook_history_boh_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('braziliex_orderbook_history_boh_id_seq', 1, false);
+
+
+--
 -- Data for Name: braziliex_trade_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY braziliex_trade_history (bth_id, bth_price, bth_amount, bth_total, bth_timestamp, bth_type, bth_ext_id, bth_market) FROM stdin;
+21087	23750.02000000	0.00662212	157.27548244	2018-06-28 12:42:07.815	buy	5b3501cf19f83324d1a37a4e	btc_brl
+21088	23750.02000000	0.00168243	39.95774615	2018-06-28 12:41:56.962	buy	5b3501c419f83324d1a37a11	btc_brl
+21089	3.85000000	10.46072668	40.27379772	2018-06-28 12:41:59.569	sell	5b3501c719f83324d1a37a25	usdt_brl
+21090	3.92000000	0.26042154	1.02085244	2018-06-28 12:40:16.315	buy	5b35016019f83324d1a378e8	usdt_brl
+21091	23900.00000000	0.36568828	8739.94989200	2018-06-28 12:51:54.557	buy	5b35041a19f83324d1a37fc7	btc_brl
+21092	23900.00000000	0.00353817	84.56226300	2018-06-28 12:46:40.616	buy	5b3502e019f83324d1a37ca9	btc_brl
+21093	23750.02000000	0.00148993	35.38586730	2018-06-28 12:46:39.934	buy	5b3502df19f83324d1a37ca4	btc_brl
+21094	23750.02000000	0.00015578	3.69977812	2018-06-28 12:44:23.305	buy	5b35025719f83324d1a37b72	btc_brl
+21095	3.92000000	0.43651220	1.71112782	2018-06-28 12:51:24.515	buy	5b3503fc19f83324d1a37f84	usdt_brl
+21096	3.92000000	0.30904365	1.21145111	2018-06-28 12:50:04.172	buy	5b3503ac19f83324d1a37eb0	usdt_brl
+21097	3.92000000	0.28200227	1.10544890	2018-06-28 12:47:54.643	buy	5b35032a19f83324d1a37d66	usdt_brl
+21098	1692.60000000	0.25600000	433.30560000	2018-06-28 12:45:54.911	sell	5b3502b219f83324d1a37c45	eth_brl
+21099	324.99000000	0.72352995	235.13999845	2018-06-28 12:48:48.553	buy	5b35036019f83324d1a37dda	ltc_brl
 15087	23950.00000000	1.29834685	31095.40705750	2018-06-28 12:17:29.579	buy	5b34fc0919f83324d1a36990	btc_brl
 15088	23900.00000000	0.74079039	17704.89032100	2018-06-28 12:15:33.347	buy	5b34fb9519f83324d1a36875	btc_brl
 15089	23900.00000000	0.25104602	5999.99987800	2018-06-28 12:14:46.572	buy	5b34fb6619f83324d1a36819	btc_brl
@@ -6100,7 +6227,7 @@ COPY braziliex_trade_history (bth_id, bth_price, bth_amount, bth_total, bth_time
 -- Name: braziliex_trade_history_bth_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('braziliex_trade_history_bth_id_seq', 21086, true);
+SELECT pg_catalog.setval('braziliex_trade_history_bth_id_seq', 21099, true);
 
 
 --
@@ -6109,6 +6236,22 @@ SELECT pg_catalog.setval('braziliex_trade_history_bth_id_seq', 21086, true);
 
 COPY configuration (conf_id, conf_api_braziliex, conf_api_braziliex_secret, conf_braziliex_nonce) FROM stdin;
 \.
+
+
+--
+-- Name: braziliex_orderbook_change braziliex_orderbook_change_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_change
+    ADD CONSTRAINT braziliex_orderbook_change_pkey PRIMARY KEY (boc_id);
+
+
+--
+-- Name: braziliex_orderbook_history braziliex_orderbook_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_history
+    ADD CONSTRAINT braziliex_orderbook_history_pkey PRIMARY KEY (boh_id);
 
 
 --
@@ -6125,6 +6268,22 @@ ALTER TABLE ONLY braziliex_trade_history
 
 ALTER TABLE ONLY configuration
     ADD CONSTRAINT configuration_pkey PRIMARY KEY (conf_id);
+
+
+--
+-- Name: braziliex_orderbook_change braziliex_orderbook_change_boc_order_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_change
+    ADD CONSTRAINT braziliex_orderbook_change_boc_order_item_fkey FOREIGN KEY (boc_order_item) REFERENCES braziliex_orderbook_history(boh_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: braziliex_orderbook_change braziliex_orderbook_change_boc_trade_history_reference_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY braziliex_orderbook_change
+    ADD CONSTRAINT braziliex_orderbook_change_boc_trade_history_reference_fkey FOREIGN KEY (boc_trade_history_reference) REFERENCES braziliex_trade_history(bth_id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --

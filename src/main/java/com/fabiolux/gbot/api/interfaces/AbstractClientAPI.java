@@ -3,9 +3,6 @@ package com.fabiolux.gbot.api.interfaces;
 import com.fabiolux.gbot.api.WebController;
 import com.fabiolux.gbot.api.util.ClientUtils;
 import com.google.gson.Gson;
-import retrofit2.Retrofit;
-
-import java.io.IOException;
 
 public abstract class AbstractClientAPI<T extends Exchange, API> {
     private final Exchange exchange;
@@ -24,8 +21,6 @@ public abstract class AbstractClientAPI<T extends Exchange, API> {
     public Exchange getExchange() {
         return exchange;
     }
-
-    public abstract String getBtcJson() throws IOException;
 
     public API getClient() {
         return client;
