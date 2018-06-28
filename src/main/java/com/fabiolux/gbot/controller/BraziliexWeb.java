@@ -13,6 +13,10 @@ public class BraziliexWeb {
     public String update() throws IOException {
         BraziliexController controller = new BraziliexController();
         controller.updateTradeHistory(Market.BTC_BRL);
+        for(Market m:Market.getAllMarkets()) {
+            System.out.println("Updating Market History: " + m.getCode());
+            controller.updateTradeHistory(m);
+        }
         return "br ok";
     }
 }

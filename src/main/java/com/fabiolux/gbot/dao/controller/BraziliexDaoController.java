@@ -4,6 +4,7 @@ import com.fabiolux.gbot.api.enums.Market;
 import com.fabiolux.gbot.api.exchanges.Braziliex;
 import com.fabiolux.gbot.dao.models.BraziliexTradeHistory;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -24,8 +25,7 @@ public class BraziliexDaoController extends DaoController<Braziliex> {
     public <T>T singleOrNull(TypedQuery<T> query){
         try {
             return query.getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoResultException e){
             return null;
         }
     }
