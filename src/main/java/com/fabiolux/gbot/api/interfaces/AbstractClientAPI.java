@@ -1,16 +1,20 @@
 package com.fabiolux.gbot.api.interfaces;
 
 import com.fabiolux.gbot.api.WebController;
+import com.fabiolux.gbot.api.util.ClientUtils;
+import com.google.gson.Gson;
 import retrofit2.Retrofit;
 
 import java.io.IOException;
 
 public abstract class AbstractClientAPI<T extends Exchange, API> {
     private final Exchange exchange;
-    private API client;
+    private final API client;
+    private final Gson gson;
     public AbstractClientAPI(){
         this.exchange = instantiateExchange();
         this.client = WebController.buildRetrofit(exchange.getBaseUrl()).create(getApiClass());
+        this.gson = ClientUtils.getGson();
     }
 
     public abstract T instantiateExchange();
@@ -27,7 +31,7 @@ public abstract class AbstractClientAPI<T extends Exchange, API> {
         return client;
     }
 
-    public void setClient(API client) {
-        this.client = client;
+    public Gson getGson() {
+        return gson;
     }
 }

@@ -1,7 +1,6 @@
 package com.fabiolux.gbot.api.exchanges;
 
-import com.fabiolux.gbot.api.enums.TRADING_EXCHANGE;
-import com.fabiolux.gbot.api.interfaces.BrazilliexApi;
+import com.fabiolux.gbot.api.enums.EXCHANGES;
 import com.fabiolux.gbot.api.interfaces.Exchange;
 
 public class Braziliex implements Exchange {
@@ -16,7 +15,7 @@ public class Braziliex implements Exchange {
     }
 
     @Override
-    public TRADING_EXCHANGE getTradingExchange() {
-        return TRADING_EXCHANGE.BRAZILIEX;
+    public EXCHANGES getTradingExchange() {
+        return EXCHANGES.BRAZILIEX;
     }
 }

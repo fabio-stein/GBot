@@ -1,5 +1,7 @@
 package com.fabiolux.gbot.dao.models;
 
+import com.fabiolux.gbot.api.util.BraziliexTradeHistoryImpl;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -7,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "braziliex_trade_history", schema = "public", catalog = "gbot")
-public class BraziliexTradeHistory {
+public class BraziliexTradeHistory extends BraziliexTradeHistoryImpl {
     private Integer bthId;
     private BigDecimal bthPrice;
     private BigDecimal bthAmount;
