@@ -7,6 +7,7 @@
         <class>com.fabiolux.gbot.dao.models.BraziliexTradeHistory</class>
         <class>com.fabiolux.gbot.dao.models.BraziliexOrderbookChange</class>
         <class>com.fabiolux.gbot.dao.models.BraziliexOrderbookHistory</class>
+        <class>com.fabiolux.gbot.dao.models.BraziliexStatus</class>
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/gbot"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>

@@ -1,7 +1,7 @@
 package com.fabiolux.gbot.dao.models;
 
 import javax.persistence.*;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -9,9 +9,9 @@ import java.util.Objects;
 @Table(name = "braziliex_orderbook_history", schema = "public", catalog = "gbot")
 public class BraziliexOrderbookHistory {
     private Long bohId;
-    private BigInteger bohInitialAmount;
-    private BigInteger bohCurrentAmount;
-    private BigInteger bohPrice;
+    private BigDecimal bohInitialAmount;
+    private BigDecimal bohCurrentAmount;
+    private BigDecimal bohPrice;
     private Timestamp bohCreatedTimestamp;
     private Timestamp bohTerminatedTimestamp;
     private String bohType;
@@ -19,6 +19,7 @@ public class BraziliexOrderbookHistory {
     private Boolean bohActive;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "boh_id", nullable = false)
     public Long getBohId() {
         return bohId;
@@ -30,31 +31,31 @@ public class BraziliexOrderbookHistory {
 
     @Basic
     @Column(name = "boh_initial_amount", nullable = false, precision = 0)
-    public BigInteger getBohInitialAmount() {
+    public BigDecimal getBohInitialAmount() {
         return bohInitialAmount;
     }
 
-    public void setBohInitialAmount(BigInteger bohInitialAmount) {
+    public void setBohInitialAmount(BigDecimal bohInitialAmount) {
         this.bohInitialAmount = bohInitialAmount;
     }
 
     @Basic
     @Column(name = "boh_current_amount", nullable = false, precision = 0)
-    public BigInteger getBohCurrentAmount() {
+    public BigDecimal getBohCurrentAmount() {
         return bohCurrentAmount;
     }
 
-    public void setBohCurrentAmount(BigInteger bohCurrentAmount) {
+    public void setBohCurrentAmount(BigDecimal bohCurrentAmount) {
         this.bohCurrentAmount = bohCurrentAmount;
     }
 
     @Basic
     @Column(name = "boh_price", nullable = false, precision = 0)
-    public BigInteger getBohPrice() {
+    public BigDecimal getBohPrice() {
         return bohPrice;
     }
 
-    public void setBohPrice(BigInteger bohPrice) {
+    public void setBohPrice(BigDecimal bohPrice) {
         this.bohPrice = bohPrice;
     }
 

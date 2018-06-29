@@ -5,9 +5,11 @@ import com.fabiolux.gbot.dao.HibernateUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 
 public class DaoController<T extends Exchange> {
-    private EntityManager em;
+    protected EntityManager em;
     private EntityTransaction transaction;
 
     public DaoController(){
@@ -34,5 +36,21 @@ public class DaoController<T extends Exchange> {
     }
     public void setEm(EntityManager em) {
         this.em = em;
+    }
+
+    public void persistEntity(Object entity){
+        getEm().persist(entity);
+    }
+
+    public void mergeEntity(Object entity){
+        getEm().merge(entity);
+    }
+
+    public <T>T singleOrNull(TypedQuery<T> query) {
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }
