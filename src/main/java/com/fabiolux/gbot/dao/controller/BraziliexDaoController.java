@@ -28,8 +28,9 @@ public class BraziliexDaoController extends DaoController<Braziliex> {
         return singleOrNull(query);
     }
 
-    public List<BraziliexOrderbookHistory> getActiveOrderbooks(){
-        TypedQuery<BraziliexOrderbookHistory> query = em.createQuery("SELECT c FROM BraziliexOrderbookHistory c WHERE c.bohActive = TRUE ", BraziliexOrderbookHistory.class);
+    public List<BraziliexOrderbookHistory> getActiveOrderbooks(Market market){
+        TypedQuery<BraziliexOrderbookHistory> query = em.createQuery("SELECT c FROM BraziliexOrderbookHistory c WHERE c.bohActive = TRUE AND c.bohMarket = :market ", BraziliexOrderbookHistory.class);
+        query.setParameter("market",market.getCode());
         return query.getResultList();
     }
 

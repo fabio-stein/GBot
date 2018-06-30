@@ -24,8 +24,9 @@ public class BraziliexWeb {
     @Scheduled(fixedRate = 500)
     public String orederBook() throws IOException {
         BraziliexController controller = new BraziliexController();
-        controller.updateTradeHistory(Market.BTC_BRL);
-        controller.updateOrderBook(Market.BTC_BRL);
+        for(Market m:Market.getAllMarkets()) {
+            controller.updateOrderBook(m);
+        }
         return "ok";
     }
 }

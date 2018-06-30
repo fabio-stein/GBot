@@ -17,6 +17,7 @@ public class BraziliexOrderbookHistory {
     private String bohType;
     private Integer bohTerminatedReason;
     private Boolean bohActive;
+    private String bohMarket;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -129,5 +130,15 @@ public class BraziliexOrderbookHistory {
     public int hashCode() {
 
         return Objects.hash(bohId, bohInitialAmount, bohCurrentAmount, bohPrice, bohCreatedTimestamp, bohTerminatedTimestamp, bohType, bohTerminatedReason, bohActive);
+    }
+
+    @Basic
+    @Column(name = "boh_market")
+    public String getBohMarket() {
+        return bohMarket;
+    }
+
+    public void setBohMarket(String bohMarket) {
+        this.bohMarket = bohMarket;
     }
 }
