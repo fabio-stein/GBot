@@ -1,6 +1,6 @@
 package com.fabiolux.gbot.dao.models;
 
-import com.fabiolux.gbot.api.util.BraziliexTradeHistoryImpl;
+import com.fabiolux.gbot.dao.utils.BraziliexTradeHistoryImpl;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.fabiolux.gbot.api.util;
+package com.fabiolux.gbot.dao.utils;
 
 import com.fabiolux.gbot.api.apiModels.braziliex.TradeHistory;
 import com.fabiolux.gbot.api.enums.Market;

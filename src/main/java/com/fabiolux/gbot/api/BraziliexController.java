@@ -1,27 +1,23 @@
 package com.fabiolux.gbot.api;
 
-import com.fabiolux.gbot.api.apiModels.braziliex.Asks;
-import com.fabiolux.gbot.api.apiModels.braziliex.Bids;
+import com.fabiolux.gbot.api.apiModels.braziliex.Order;
 import com.fabiolux.gbot.api.apiModels.braziliex.Orderbook;
 import com.fabiolux.gbot.api.apiModels.braziliex.TradeHistory;
 import com.fabiolux.gbot.api.enums.Market;
-import com.fabiolux.gbot.api.enums.OrderbookType;
 import com.fabiolux.gbot.api.exchanges.Braziliex;
 import com.fabiolux.gbot.api.interfaces.AbstractClientAPI;
 import com.fabiolux.gbot.api.interfaces.BrazilliexApi;
-import com.fabiolux.gbot.api.util.BraziliexTradeHistoryImpl;
 import com.fabiolux.gbot.dao.controller.BraziliexDaoController;
 import com.fabiolux.gbot.dao.models.BraziliexOrderbookHistory;
 import com.fabiolux.gbot.dao.models.BraziliexStatus;
 import com.fabiolux.gbot.dao.models.BraziliexTradeHistory;
+import com.fabiolux.gbot.dao.utils.BraziliexTradeHistoryImpl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BraziliexController extends AbstractClientAPI<Braziliex, BrazilliexApi> {
@@ -54,69 +50,48 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
     public void updateOrderBook(Market market) throws IOException {
         Orderbook orderbook = getClient().getOrderBook(market.getCode()).execute().body();
         dao.beginTransaction();
-        List<Asks> asks = new ArrayList<>(Arrays.asList(orderbook.getAsks()));
-        List<Bids> bids = new ArrayList<>(Arrays.asList(orderbook.getBids()));
+        List<Order> orders = orderbook.toOrders();
         List<BraziliexOrderbookHistory> savedOrderbooks = dao.getActiveOrderbooks(market);
-        int notFoundAsk = 0;
-        int notFoundBid = 0;
+        List<BraziliexOrderbookHistory> ordersNotFound = new ArrayList<>();
 
         for(int i=0;i<savedOrderbooks.size();i++){
-            BraziliexOrderbookHistory order = savedOrderbooks.get(i);
+            BraziliexOrderbookHistory savedOrder = savedOrderbooks.get(i);
             boolean found = false;
-            if(order.getBohType().equals(OrderbookType.ASK.getCode())) {
-                for (int c = 0; c < asks.size(); c++) {
-                    Asks ask = asks.get(c);
-                    if (new BigDecimal(ask.getPrice()).equals(order.getBohPrice())) {
-                        found = true;
-                        asks.remove(c);
-                        c--;
-                    }
-                }
-            }else if(order.getBohType().equals(OrderbookType.BID.getCode())){
-                for (int c = 0; c < bids.size(); c++) {
-                    Bids bid = bids.get(c);
-                    if (new BigDecimal(bid.getPrice()).equals(order.getBohPrice())) {
-                        found = true;
-                        bids.remove(c);
-                        c--;
-                    }
+            for(int c=0;c<orders.size();c++){
+                Order order = orders.get(c);
+                if (savedOrder.getBohType().equals(order.getType().getCode()) && new BigDecimal(order.getPrice()).equals(savedOrder.getBohPrice())) {
+                    found = true;
+                    orders.remove(c);
+                    c--;
                 }
             }
             if(!found){
-                order.setBohActive(false);
-                order.setBohTerminatedTimestamp(Timestamp.from(Instant.now()));
-                dao.persistEntity(order);
-                if(order.getBohType().equals(OrderbookType.ASK.getCode())){
-                    notFoundAsk++;
-                }else if(order.getBohType().equals(OrderbookType.BID.getCode())){
-                    notFoundBid++;
-                }
+                ordersNotFound.add(savedOrder);
+                savedOrder.setBohActive(false);
+                savedOrder.setBohTerminatedTimestamp(Timestamp.from(Instant.now()));
+                dao.persistEntity(savedOrder);
             }
         }
-        if(notFoundAsk>0 || notFoundBid>0 || asks.size()>0 || bids.size()>0)
+
+        List<BraziliexOrderbookHistory> bidsNotFound = BraziliexOrderbookHistory.getBids(ordersNotFound);
+        List<BraziliexOrderbookHistory> asksNotFound = BraziliexOrderbookHistory.getAsks(ordersNotFound);
+
+        List<Order> newAsks = Order.getAsks(orders);
+        List<Order> newBids = Order.getBids(orders);
+        if(asksNotFound.size()>0 || bidsNotFound.size()>0 || orders.size()>0)
             System.out.println("UPDATE MARKET: "+market.getCode());
-        if(notFoundAsk>0 || notFoundBid>0)
-            System.out.println("TERMINATED "+notFoundAsk+" ask(s), "+notFoundBid+" bid(s)");
-        if(asks.size()>0 || bids.size()>0)
-            System.out.println("CREATED "+asks.size()+" ask(s), "+bids.size()+" bid(S)");
-        for(Asks ask:asks) {
+        if(asksNotFound.size()>0 || bidsNotFound.size()>0)
+            System.out.println("TERMINATED "+asksNotFound.size()+" ask(s), "+bidsNotFound.size()+" bid(s)");
+        if(orders.size()>0)
+            System.out.println("CREATED "+newAsks.size()+" ask(s), "+newBids.size()+" bid(S)");
+
+        for(Order order:orders){
             BraziliexOrderbookHistory history = new BraziliexOrderbookHistory();
-            history.setBohInitialAmount(new BigDecimal(ask.getAmount()));
-            history.setBohCurrentAmount(new BigDecimal(ask.getAmount()));
-            history.setBohPrice(new BigDecimal(ask.getPrice()));
+            history.setBohInitialAmount(new BigDecimal(order.getAmount()));
+            history.setBohCurrentAmount(new BigDecimal(order.getAmount()));
+            history.setBohPrice(new BigDecimal(order.getPrice()));
             history.setBohCreatedTimestamp(Timestamp.from(Instant.now()));
-            history.setBohType(OrderbookType.ASK.getCode());
-            history.setBohActive(true);
-            history.setBohMarket(market.getCode());
-            dao.persistEntity(history);
-        }
-        for(Bids bid:bids) {
-            BraziliexOrderbookHistory history = new BraziliexOrderbookHistory();
-            history.setBohInitialAmount(new BigDecimal(bid.getAmount()));
-            history.setBohCurrentAmount(new BigDecimal(bid.getAmount()));
-            history.setBohPrice(new BigDecimal(bid.getPrice()));
-            history.setBohCreatedTimestamp(Timestamp.from(Instant.now()));
-            history.setBohType(OrderbookType.BID.getCode());
+            history.setBohType(order.getType().getCode());
             history.setBohActive(true);
             history.setBohMarket(market.getCode());
             dao.persistEntity(history);
