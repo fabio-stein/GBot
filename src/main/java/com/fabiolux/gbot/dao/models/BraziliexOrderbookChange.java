@@ -1,7 +1,7 @@
 package com.fabiolux.gbot.dao.models;
 
 import javax.persistence.*;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -9,12 +9,15 @@ import java.util.Objects;
 @Table(name = "braziliex_orderbook_change", schema = "public", catalog = "gbot")
 public class BraziliexOrderbookChange {
     private Long bocId;
-    private BigInteger bocPreviousAmount;
-    private BigInteger bocNewAmount;
+    private BigDecimal bocPreviousAmount;
+    private BigDecimal bocNewAmount;
     private Timestamp bocTimestamp;
     private Integer bocType;
+    private Long bocOrderItem;
+    private Long bocTradeHistoryReference;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "boc_id", nullable = false)
     public Long getBocId() {
         return bocId;
@@ -26,21 +29,21 @@ public class BraziliexOrderbookChange {
 
     @Basic
     @Column(name = "boc_previous_amount", nullable = false, precision = 0)
-    public BigInteger getBocPreviousAmount() {
+    public BigDecimal getBocPreviousAmount() {
         return bocPreviousAmount;
     }
 
-    public void setBocPreviousAmount(BigInteger bocPreviousAmount) {
+    public void setBocPreviousAmount(BigDecimal bocPreviousAmount) {
         this.bocPreviousAmount = bocPreviousAmount;
     }
 
     @Basic
     @Column(name = "boc_new_amount", nullable = false, precision = 0)
-    public BigInteger getBocNewAmount() {
+    public BigDecimal getBocNewAmount() {
         return bocNewAmount;
     }
 
-    public void setBocNewAmount(BigInteger bocNewAmount) {
+    public void setBocNewAmount(BigDecimal bocNewAmount) {
         this.bocNewAmount = bocNewAmount;
     }
 
@@ -80,5 +83,25 @@ public class BraziliexOrderbookChange {
     public int hashCode() {
 
         return Objects.hash(bocId, bocPreviousAmount, bocNewAmount, bocTimestamp, bocType);
+    }
+
+    @Basic
+    @Column(name = "boc_order_item", nullable = false)
+    public Long getBocOrderItem() {
+        return bocOrderItem;
+    }
+
+    public void setBocOrderItem(Long bocOrderItem) {
+        this.bocOrderItem = bocOrderItem;
+    }
+
+    @Basic
+    @Column(name = "boc_trade_history_reference", nullable = true)
+    public Long getBocTradeHistoryReference() {
+        return bocTradeHistoryReference;
+    }
+
+    public void setBocTradeHistoryReference(Long bocTradeHistoryReference) {
+        this.bocTradeHistoryReference = bocTradeHistoryReference;
     }
 }

@@ -4,14 +4,17 @@ import com.fabiolux.gbot.api.apiModels.braziliex.Order;
 import com.fabiolux.gbot.api.apiModels.braziliex.Orderbook;
 import com.fabiolux.gbot.api.apiModels.braziliex.TradeHistory;
 import com.fabiolux.gbot.api.enums.Market;
+import com.fabiolux.gbot.api.enums.ORDER_CHANGE_REASON;
 import com.fabiolux.gbot.api.exchanges.Braziliex;
 import com.fabiolux.gbot.api.interfaces.AbstractClientAPI;
 import com.fabiolux.gbot.api.interfaces.BrazilliexApi;
 import com.fabiolux.gbot.dao.controller.BraziliexDaoController;
+import com.fabiolux.gbot.dao.models.BraziliexOrderbookChange;
 import com.fabiolux.gbot.dao.models.BraziliexOrderbookHistory;
 import com.fabiolux.gbot.dao.models.BraziliexStatus;
 import com.fabiolux.gbot.dao.models.BraziliexTradeHistory;
 import com.fabiolux.gbot.dao.utils.BraziliexTradeHistoryImpl;
+import io.reactivex.annotations.Nullable;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -57,10 +60,12 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
         for(int i=0;i<savedOrderbooks.size();i++){
             BraziliexOrderbookHistory savedOrder = savedOrderbooks.get(i);
             boolean found = false;
+            Order orderFound = null;
             for(int c=0;c<orders.size();c++){
                 Order order = orders.get(c);
                 if (savedOrder.getBohType().equals(order.getType().getCode()) && new BigDecimal(order.getPrice()).equals(savedOrder.getBohPrice())) {
                     found = true;
+                    orderFound = order;
                     orders.remove(c);
                     c--;
                 }
@@ -70,6 +75,17 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
                 savedOrder.setBohActive(false);
                 savedOrder.setBohTerminatedTimestamp(Timestamp.from(Instant.now()));
                 dao.persistEntity(savedOrder);
+                saveOrderbookChange(SAVE_ORDER_ACTION.TERMINATE, market, savedOrder, savedOrder.getBohCurrentAmount());
+            }
+            if(found){
+                BigDecimal newAmount = new BigDecimal(orderFound.getAmount());
+                //Amount changed
+                if(!newAmount.equals(savedOrder.getBohCurrentAmount())){
+                    System.out.println("Order amount changed from "+savedOrder.getBohCurrentAmount()+" to "+orderFound.getAmount());
+                    saveOrderbookChange(SAVE_ORDER_ACTION.CHANGE_VALUE, market, savedOrder, newAmount);
+                    savedOrder.setBohCurrentAmount(newAmount);
+                    dao.persistEntity(savedOrder);
+                }
             }
         }
 
@@ -95,10 +111,58 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
             history.setBohActive(true);
             history.setBohMarket(market.getCode());
             dao.persistEntity(history);
+            saveOrderbookChange(SAVE_ORDER_ACTION.CREATE, market, history, history.getBohCurrentAmount());
         }
+
         BraziliexStatus status = dao.getStatus();
         status.setBsLastCheck(Timestamp.from(Instant.now()));
         dao.updateStatus(status);
         dao.endTransaction(true);
+    }
+
+    private enum SAVE_ORDER_ACTION{
+        CREATE,
+        CHANGE_VALUE,
+        TERMINATE
+    }
+    public void saveOrderbookChange(SAVE_ORDER_ACTION action, Market market, BraziliexOrderbookHistory brOrder, @Nullable BigDecimal newAmount){
+        if(action==SAVE_ORDER_ACTION.CREATE) {
+            assert brOrder!=null;
+            //Save change log
+            BraziliexOrderbookChange orderChange = new BraziliexOrderbookChange();
+            orderChange.setBocPreviousAmount(brOrder.getBohCurrentAmount());
+            orderChange.setBocNewAmount(brOrder.getBohCurrentAmount());
+            orderChange.setBocTimestamp(Timestamp.from(Instant.now()));
+            //TODO verify last check limit
+            orderChange.setBocType(ORDER_CHANGE_REASON.CREATED.ordinal());
+            orderChange.setBocOrderItem(brOrder.getBohId());
+            dao.persistEntity(orderChange);
+        }else if(action==SAVE_ORDER_ACTION.CHANGE_VALUE || action==SAVE_ORDER_ACTION.TERMINATE){
+            if(action==SAVE_ORDER_ACTION.CHANGE_VALUE)
+                assert newAmount!=null;
+            //Search for trades that had same price of the changed order
+            List<BraziliexTradeHistory> lastTrades = dao.getLastOrders(market);
+            List<BraziliexTradeHistory> sameValueTrades = new ArrayList<>();
+            for(int i=0;i<lastTrades.size();i++)
+                if(lastTrades.get(i).getBthPrice().equals(brOrder.getBohPrice()))
+                    sameValueTrades.add(lastTrades.get(i));
+
+            BraziliexOrderbookChange orderChange = new BraziliexOrderbookChange();
+            orderChange.setBocTimestamp(Timestamp.from(Instant.now()));
+            orderChange.setBocOrderItem(brOrder.getBohId());
+            if(sameValueTrades.isEmpty()){
+                orderChange.setBocNewAmount(newAmount);
+                if(action==SAVE_ORDER_ACTION.TERMINATE){
+                    //TODO verify last check limit
+                    orderChange.setBocType(ORDER_CHANGE_REASON.TERMINATED_UNKNOWN.ordinal());
+                }else if(action==SAVE_ORDER_ACTION.CHANGE_VALUE){
+                    //TODO verify last check limit
+                    orderChange.setBocType(ORDER_CHANGE_REASON.VALUE_CHANGED_UNKNOWN.ordinal());
+                }
+            }else{
+                //TODO check similar trades
+                System.out.println("Found similar trade(s) for changed order");
+            }
+        }
     }
 }

@@ -7,6 +7,10 @@ import com.fabiolux.gbot.dao.models.BraziliexStatus;
 import com.fabiolux.gbot.dao.models.BraziliexTradeHistory;
 
 import javax.persistence.TypedQuery;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class BraziliexDaoController extends DaoController<Braziliex> {
@@ -32,6 +36,16 @@ public class BraziliexDaoController extends DaoController<Braziliex> {
         TypedQuery<BraziliexOrderbookHistory> query = em.createQuery("SELECT c FROM BraziliexOrderbookHistory c WHERE c.bohActive = TRUE AND c.bohMarket = :market ", BraziliexOrderbookHistory.class);
         query.setParameter("market",market.getCode());
         return query.getResultList();
+    }
+
+    public List<BraziliexTradeHistory> getLastOrders(Market market){
+        TypedQuery<BraziliexTradeHistory> query = getEm().createQuery("SELECT bth FROM BraziliexTradeHistory bth WHERE bth.bthMarket = :market AND bth.bthTimestamp >= :minTimestamp ORDER BY bth.bthTimestamp DESC", BraziliexTradeHistory.class);
+        LocalDateTime minTimestamp = LocalDateTime.now().minusSeconds(5);
+        Instant instant = minTimestamp.atZone(ZoneId.systemDefault()).toInstant();
+        Date dateFromOld = Date.from(instant);
+        query.setParameter("minTimestamp", dateFromOld);
+        query.setParameter("market", market.getCode());
+        return  query.getResultList();
     }
 
     public void updateStatus(BraziliexStatus status){
