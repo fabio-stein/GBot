@@ -144,7 +144,7 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
             List<BraziliexTradeHistory> lastTrades = dao.getLastOrders(market);
             List<BraziliexTradeHistory> sameValueTrades = new ArrayList<>();
             for(int i=0;i<lastTrades.size();i++)
-                if(lastTrades.get(i).getBthPrice().equals(brOrder.getBohPrice()))
+                if(lastTrades.get(i).getBthPrice().stripTrailingZeros().equals(brOrder.getBohPrice().stripTrailingZeros()))
                     sameValueTrades.add(lastTrades.get(i));
 
             BraziliexOrderbookChange orderChange = new BraziliexOrderbookChange();
@@ -159,6 +159,7 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
                     //TODO verify last check limit
                     orderChange.setBocType(ORDER_CHANGE_REASON.VALUE_CHANGED_UNKNOWN.ordinal());
                 }
+                dao.persistEntity(orderChange);
             }else{
                 //TODO check similar trades
                 System.out.println("Found similar trade(s) for changed order");
