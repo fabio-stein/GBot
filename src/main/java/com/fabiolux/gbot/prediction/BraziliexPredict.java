@@ -9,9 +9,11 @@ import io.reactivex.schedulers.Schedulers;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 @RestController
 public class BraziliexPredict {
@@ -39,11 +41,15 @@ public class BraziliexPredict {
                 bpp.setBppPredictionForTimestamp(Timestamp.from(Instant.now().plus(1, ChronoUnit.SECONDS)));
                 //Simulate prediction with the same of last price
                 BraziliexTradeHistory history = controller.getDao().getLatestByTime(Market.BTC_BRL);
-                bpp.setBppPredictionPrice(history.getBthPrice());
+                BigDecimal predictedPrice = history.getBthPrice();
+                BigDecimal randomSum = new BigDecimal(getRandomNumberInRange(-5,+5));
+                predictedPrice = predictedPrice.add(randomSum);
+
+                bpp.setBppPredictionPrice(predictedPrice);
                 controller.getDao().beginTransaction();
                 controller.getDao().persistEntity(bpp);
                 controller.getDao().endTransaction(true);
-                Thread.sleep(1000);
+                Thread.sleep(60000);
                 System.out.println("PREDICTED VALUE: "+bpp.getBppPredictionPrice());
             }catch (Exception e){
                 System.out.println("ERROR PREDICTING");
@@ -52,5 +58,15 @@ public class BraziliexPredict {
         })
                 .subscribeOn(Schedulers.newThread())
                 .subscribe();
+    }
+
+    private static int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 }
