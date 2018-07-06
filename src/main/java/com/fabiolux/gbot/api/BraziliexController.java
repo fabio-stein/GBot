@@ -140,6 +140,8 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
         }else if(action==SAVE_ORDER_ACTION.CHANGE_VALUE || action==SAVE_ORDER_ACTION.TERMINATE){
             if(action==SAVE_ORDER_ACTION.CHANGE_VALUE)
                 assert newAmount!=null;
+            if(!brOrder.getBohCurrentAmount().equals(newAmount))
+                System.out.println("Order amount changed from "+brOrder.getBohCurrentAmount()+" to "+newAmount);
             //Search for trades that had same price of the changed order
             List<BraziliexTradeHistory> lastTrades = dao.getLastOrders(market);
             List<BraziliexTradeHistory> sameValueTrades = new ArrayList<>();
@@ -148,6 +150,7 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
                     sameValueTrades.add(lastTrades.get(i));
 
             BraziliexOrderbookChange orderChange = new BraziliexOrderbookChange();
+            orderChange.setBocPreviousAmount(brOrder.getBohCurrentAmount());
             orderChange.setBocTimestamp(Timestamp.from(Instant.now()));
             orderChange.setBocOrderItem(brOrder.getBohId());
             if(sameValueTrades.isEmpty()){
@@ -165,5 +168,9 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
                 System.out.println("Found similar trade(s) for changed order");
             }
         }
+    }
+
+    public BraziliexDaoController getDao() {
+        return dao;
     }
 }
