@@ -49,8 +49,8 @@ public class BraziliexPredict {
                 controller.getDao().beginTransaction();
                 controller.getDao().persistEntity(bpp);
                 controller.getDao().endTransaction(true);
-                Thread.sleep(60000);
                 System.out.println("PREDICTED VALUE: "+bpp.getBppPredictionPrice());
+                Thread.sleep(30000);
             }catch (Exception e){
                 System.out.println("ERROR PREDICTING");
             }
