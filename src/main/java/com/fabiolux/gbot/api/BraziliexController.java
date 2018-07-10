@@ -81,7 +81,6 @@ public class BraziliexController extends AbstractClientAPI<Braziliex, Brazilliex
                 BigDecimal newAmount = new BigDecimal(orderFound.getAmount());
                 //Amount changed
                 if(!newAmount.equals(savedOrder.getBohCurrentAmount())){
-                    System.out.println("Order amount changed from "+savedOrder.getBohCurrentAmount()+" to "+orderFound.getAmount());
                     saveOrderbookChange(SAVE_ORDER_ACTION.CHANGE_VALUE, market, savedOrder, newAmount);
                     savedOrder.setBohCurrentAmount(newAmount);
                     dao.persistEntity(savedOrder);
