@@ -23,7 +23,7 @@ public class BraziliexPredict {
     public void init(){
         //Simple wait for db connection and start
         Observable.create(emitter -> {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
             controller = new BraziliexController();
             executePredict();
         })
