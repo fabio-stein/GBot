@@ -26,7 +26,7 @@ SELECT count(*) as activeOrders, sum(boh_initial_amount*boh_price) as totalinmar
 WHERE timeval >= (now() - interval '24 HOUR')
 AND boh_type = '{mkType}'
 GROUP BY timeval
-ORDER BY timeval ASC""".format(mkType=marketType), conn);
+ORDER BY timeval ASC""".format(mkType=marketType), conn, index_col="timeval");
 
 def getTotalTransactions(typeBuySell):
     return pd.read_sql_query("""WITH tempos as(
