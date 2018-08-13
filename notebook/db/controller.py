@@ -1,5 +1,9 @@
 import pandas as pd
 conn = None
+
+startDate = '2018-08-01';
+endDate = '2018-08-10';
+
 def test():
     return  pd.read_sql_query(
         "SELECT * FROM braziliex_trade_history WHERE bth_timestamp >= (now() - interval '72 HOUR') AND bth_market = 'btc_brl'",
@@ -15,18 +19,11 @@ def getBids():
     return pd.read_sql_query("SELECT *, boh_price::integer as preco FROM braziliex_orderbook_history WHERE boh_created_timestamp >= (now() - interval '12 HOUR') AND boh_market = 'btc_brl' AND boh_type = 'bid' AND boh_active = FALSE", conn)
 
 def getMarketByTime(marketType):
-    return pd.read_sql_query("""WITH tempos as(
-SELECT to_timestamp(floor((extract('epoch' from boh_created_timestamp) / 600 )) * 600) 
-AT TIME ZONE 'UTC' as timeval
-FROM braziliex_orderbook_history
+    return pd.read_sql_query("""WITH tempos as(select generate_series('{startDate}', '{endDate}', '10 minutes'::interval)::timestamp as timeval)
+SELECT count(*) as activeOrders, sum(boh_initial_amount*boh_price) as totalinmarket, timeval FROM braziliex_orderbook_history INNER JOIN tempos ON boh_created_timestamp <= timeval AND boh_terminated_timestamp >= timeval
 WHERE boh_type = '{mkType}'
 GROUP BY timeval
-ORDER BY timeval DESC)
-SELECT count(*) as activeOrders, sum(boh_initial_amount*boh_price) as totalinmarket, timeval FROM braziliex_orderbook_history INNER JOIN tempos ON boh_created_timestamp <= timeval AND boh_terminated_timestamp >= timeval
-WHERE timeval >= (now() - interval '24 HOUR')
-AND boh_type = '{mkType}'
-GROUP BY timeval
-ORDER BY timeval ASC""".format(mkType=marketType), conn, index_col="timeval");
+ORDER BY timeval ASC;""".format(mkType=marketType, startDate = startDate, endDate = endDate), conn, index_col="timeval");
 
 def getTotalTransactions(typeBuySell):
     return pd.read_sql_query("""WITH tempos as(
